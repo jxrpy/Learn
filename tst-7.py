@@ -2,12 +2,15 @@
 ''' Pass a string to this program to see how long it takes to randomly guess it.
     Just as a warning, you will turn your computer into a heater depending on the size
     of the phrase. Anything over 5 or 6 characters can take a while
+    
+    Let's cheat a bit and assume that we remember the position that we got right. This should
+    improve the odds of finding the correct phrase
 ''' 
 def run(text):
   import random
   
   chars = [' ','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u',
-           'v','x','y','w','z']
+           'v','x','y','w','z','.',',']
   
   num_op = {6:('Million',1000000), 7:('Million',1000000), 8:('Million',1000000),
             9:('Billion',1000000000), 10:('Billion',1000000000), 11:('Billion',1000000000),
@@ -22,15 +25,20 @@ def run(text):
       if i in chars:
         pass
       else:
-        raise ValueError('Only chars a through z and space are acceptable')
+        raise ValueError('Only chars a through z ., and space are acceptable')
   else:
     raise TypeError('Must be a string of at least one character')
     
+  # Define a list to return which positions have been guessed
+  text_pos = [0 for x in range(len(text))]
   
   def genstr():
     phrase = ''
     for i in range(len(text)):
-      phrase += random.choice(chars)
+      if text_pos[i]:
+        phrase += text[i]
+      else:
+        phrase += random.choice(chars)
     return phrase
   
   
@@ -41,6 +49,7 @@ def run(text):
     for i in range(len(phrase)):
       if phrase[i] == text[i]:
         j += 1
+        text_pos[i] = 1
     
     return j*100/len(text)
   
@@ -55,7 +64,7 @@ def run(text):
     score = chkstr(phrase)
 
     if score == 100:
-      print('Even I can do it, phrase:{} on attempt:{:d}'.format(phrase,i))
+      print('Even I can do it, phrase:{} --> on attempt:{:d}'.format(phrase,i))
       break
     elif score > best_score:
       best_score = score
